@@ -63,22 +63,29 @@ jobs:
       contents: read
       actions: read
     env:
-      ECR_REPOSITORY: ckl-demos-prod-sdp-dashboard
-      ECS_CLUSTER_NAME: ckl-demos-prod
-      ECS_SERVICE_NAME: ckl-demos-prod-sdp-dashboard
-      ECS_CONTAINER_NAME: ckl-demos-prod-sdp-dashboard
-      ECS_TASK_NAME: ckl-demos-prod-sdp-dashboard
       IMAGE_TAG: ${{ github.sha }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Set resource names
+        env:
+          BASE_NAME: ${{ secrets.CKL_BASE_NAME }}
+          COMPONENT_NAME: ${{ secrets.CKL_COMPONENT_NAME }}
+        run: |
+          RESOURCE_NAME="${BASE_NAME}-${COMPONENT_NAME}"
+          echo "ECR_REPOSITORY=${RESOURCE_NAME}" >> $GITHUB_ENV
+          echo "ECS_CLUSTER_NAME=${BASE_NAME}" >> $GITHUB_ENV
+          echo "ECS_SERVICE_NAME=${RESOURCE_NAME}" >> $GITHUB_ENV
+          echo "ECS_CONTAINER_NAME=${RESOURCE_NAME}" >> $GITHUB_ENV
+          echo "ECS_TASK_NAME=${RESOURCE_NAME}" >> $GITHUB_ENV
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -99,7 +106,6 @@ jobs:
         run: |
           docker load --input /tmp/docker_image.tar
           docker tag build:1.0.0 ${{ env.IMAGE }}
-          docker image ls -a
           docker push ${{ env.IMAGE }}
 
       - name: Download ECS task definition
@@ -138,7 +144,7 @@ jobs:
               *👤 Author:* ${{ github.actor }}
               *🔗 Commit Link:* <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|View Commit>
               ${{ github.event.pull_request.title != '' && format('*📢 PR:* {0} (<https://github.com/{1}/pull/{2}|Open PR>)', github.event.pull_request.title, github.repository, github.event.pull_request.number) || '' }}
-              *✅ Status:* Deploy to DEMO completed successfully. Image: ${{ env.IMAGE }}
+              *✅ Status:* Deploy to DEMO completed successfully.
             attachments:
               - color: "#36a64f"
                 text: "Deploy completed"
