@@ -87,6 +87,11 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Mask AWS account number
+        run: |
+          AWS_ACCOUNT="${{ secrets.AWS_ACCOUNT_NUMBER }}"
+          echo "::add-mask::${AWS_ACCOUNT}"
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
