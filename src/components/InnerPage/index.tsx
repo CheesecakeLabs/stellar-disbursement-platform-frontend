@@ -84,6 +84,12 @@ export const InnerPage = ({ children, isNarrow, isCardLayout }: InnerPageProps) 
       route: Routes.ANALYTICS,
       icon: <Icon.LineChartUp01 />,
     },
+    {
+      id: "nav-reports",
+      label: "Reports",
+      route: Routes.REPORTS,
+      icon: <Icon.File05 />,
+    },
   ];
 
   const ITEMS_BOTTOM: NavItem[] = [

@@ -1,0 +1,36 @@
+@use "../../styles/styles-utils.scss" as *;
+
+.WalletStatementCard {
+  &__description {
+    color: var(--sds-clr-gray-11);
+  }
+
+  &__period {
+    display: flex;
+    flex-direction: column;
+    gap: pxToRem(8px);
+  }
+
+  &__periodButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: pxToRem(8px);
+  }
+
+  &__dateRange {
+    display: flex;
+    flex-wrap: wrap;
+    gap: pxToRem(16px);
+  }
+
+  &__dateInput {
+    min-width: pxToRem(160px);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: pxToRem(8px);
+    margin-top: pxToRem(8px);
+  }
+}

@@ -33,6 +33,7 @@ import { Payments } from "@/pages/Payments";
 import { DistributionAccount } from "@/pages/DistributionAccount";
 import { WalletProviders } from "@/pages/WalletProviders";
 import { Analytics } from "@/pages/Analytics";
+import { Reports } from "@/pages/Reports";
 import { Profile } from "@/pages/Profile";
 import { Settings } from "@/pages/Settings";
 import { Help } from "@/pages/Help";
@@ -307,6 +308,17 @@ export const App = () => {
                 <PrivateRoute>
                   <InnerPage>
                     <Analytics />
+                  </InnerPage>
+                </PrivateRoute>
+              }
+            />
+            {/* Reports */}
+            <Route
+              path={Routes.REPORTS}
+              element={
+                <PrivateRoute>
+                  <InnerPage isNarrow>
+                    <Reports />
                   </InnerPage>
                 </PrivateRoute>
               }

@@ -156,6 +156,14 @@ export type SortByReceivers = "created_at";
 
 export type SortByPayments = "created_at";
 
+export type StatementPeriod = "this_month" | "last_month" | "qtd" | "ytd" | "custom";
+
+export type StatementQueryParams = {
+  fromDate: string;
+  toDate: string;
+  assetCode?: string;
+};
+
 export type AccountBalanceItem = {
   balance: string;
   assetCode: string;
