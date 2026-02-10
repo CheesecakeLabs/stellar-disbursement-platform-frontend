@@ -162,6 +162,7 @@ export type StatementQueryParams = {
   fromDate: string;
   toDate: string;
   assetCode?: string;
+  baseUrl?: string;
 };
 
 export type AccountBalanceItem = {

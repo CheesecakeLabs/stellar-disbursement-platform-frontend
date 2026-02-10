@@ -10,6 +10,8 @@ import {
   getQTDDates,
   getYTDDates,
 } from "@/helpers/getStatementPeriodDates";
+import { stripProtocolFromBaseUrl } from "@/helpers/stripProtocolFromBaseUrl";
+import { useRedux } from "@/hooks/useRedux";
 import type { StatementPeriod } from "@/types";
 
 type StatementPeriodKey = Exclude<StatementPeriod, "custom">;
@@ -34,6 +36,7 @@ export const WalletStatementCard = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [activePeriod, setActivePeriod] = useState<StatementPeriodKey | null>(null);
+  const { organization } = useRedux("organization");
 
   const isValidRange = fromDate && toDate && fromDate <= toDate;
 
@@ -59,7 +62,10 @@ export const WalletStatementCard = () => {
   const handleDownload = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!isValidRange) return;
-    downloadStatement({ fromDate, toDate });
+    const baseUrl = organization.data.baseUrl
+      ? stripProtocolFromBaseUrl(organization.data.baseUrl)
+      : undefined;
+    downloadStatement({ fromDate, toDate, baseUrl });
   };
 
   return (

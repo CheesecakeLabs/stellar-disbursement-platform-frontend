@@ -6,13 +6,15 @@ import { fetchApi } from "@/helpers/fetchApi";
 import { normalizeApiError } from "@/helpers/normalizeApiError";
 import { saveFile } from "@/helpers/saveFile";
 import { stripProtocolFromBaseUrl } from "@/helpers/stripProtocolFromBaseUrl";
-import { AppError, StatementQueryParams } from "@/types";
+import { AppError } from "@/types";
 
-function statementFilename(fromDate: string, toDate: string): string {
-  const from = fromDate.replaceAll("-", "");
-  const to = toDate.replaceAll("-", "");
-  return `statement_${from}-${to}.pdf`;
-}
+const INTERNAL_NOTES_MAX_LENGTH = 100;
+
+export type TransactionNoticeExportParams = {
+  paymentId: string;
+  internalNotes?: string;
+  baseUrl?: string;
+};
 
 function getFilenameFromContentDisposition(header: string | null, fallback: string): string {
   if (!header) return fallback;
@@ -21,9 +23,9 @@ function getFilenameFromContentDisposition(header: string | null, fallback: stri
   return match ? (match[1] ?? match[2]).trim() : fallback;
 }
 
-async function handleStatementExportResponse(
+async function handleTransactionNoticeExportResponse(
   response: Response,
-  params: StatementQueryParams,
+  paymentId: string,
   resolve: () => void,
   reject: (reason: unknown) => void,
 ): Promise<void> {
@@ -38,7 +40,7 @@ async function handleStatementExportResponse(
       throw normalizeApiError(err);
     }
     const blob = await response.blob();
-    const fallback = statementFilename(params.fromDate, params.toDate);
+    const fallback = `transaction_notice_${paymentId}.pdf`;
     const filename = getFilenameFromContentDisposition(
       response.headers.get("Content-Disposition"),
       fallback,
@@ -53,26 +55,36 @@ async function handleStatementExportResponse(
   }
 }
 
-export const useStatementExport = () => {
-  const mutation = useMutation<void, AppError, StatementQueryParams>({
-    mutationFn: (params: StatementQueryParams): Promise<void> =>
+export const useTransactionNoticeExport = () => {
+  const mutation = useMutation<void, AppError, TransactionNoticeExportParams>({
+    mutationFn: (params: TransactionNoticeExportParams): Promise<void> =>
       new Promise<void>((resolve, reject) => {
-        const searchParams = new URLSearchParams({
-          from_date: params.fromDate,
-          to_date: params.toDate,
-        });
-        if (params.assetCode) searchParams.set("asset_code", params.assetCode);
+        const searchParams = new URLSearchParams();
+        if (params.internalNotes) {
+          const notes =
+            params.internalNotes.length > INTERNAL_NOTES_MAX_LENGTH
+              ? params.internalNotes.slice(0, INTERNAL_NOTES_MAX_LENGTH)
+              : params.internalNotes;
+          searchParams.set("internal_notes", notes);
+        }
         if (params.baseUrl) {
           searchParams.set("base_url", stripProtocolFromBaseUrl(params.baseUrl));
         }
-        const url = `${API_URL}/statements/export?${searchParams.toString()}`;
+        const queryString = searchParams.toString();
+        const queryPart = queryString ? `?${queryString}` : "";
+        const url = `${API_URL}/payments/${params.paymentId}/export${queryPart}`;
 
         const fetchResult = fetchApi(
           url,
           {},
           {
             customCallback: (response: Response) => {
-              void handleStatementExportResponse(response, params, resolve, reject);
+              void handleTransactionNoticeExportResponse(
+                response,
+                params.paymentId,
+                resolve,
+                reject,
+              );
             },
           },
         );

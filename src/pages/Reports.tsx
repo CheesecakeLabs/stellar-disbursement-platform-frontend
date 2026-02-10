@@ -1,6 +1,7 @@
 import { Heading } from "@stellar/design-system";
 
 import { SectionHeader } from "@/components/SectionHeader";
+import { TransactionNoticeCard } from "@/components/TransactionNoticeCard";
 import { WalletStatementCard } from "@/components/WalletStatementCard";
 
 export const Reports = () => {
@@ -18,6 +19,7 @@ export const Reports = () => {
 
       <div className="CardStack">
         <WalletStatementCard />
+        <TransactionNoticeCard />
       </div>
     </>
   );
