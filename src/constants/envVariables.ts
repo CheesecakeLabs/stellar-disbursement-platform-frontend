@@ -17,7 +17,6 @@ declare global {
       RECAPTCHA_SITE_KEY: string;
       SINGLE_TENANT_MODE: boolean;
       USE_SSO?: boolean;
-      ENABLE_REPORTS_FEATURE?: string;
       OIDC_AUTHORITY?: string;
       OIDC_CLIENT_ID?: string;
       OIDC_REDIRECT_URI?: string;
@@ -39,22 +38,19 @@ const generateEnvConfig = async () => {
   }
 
   return {
-    API_URL: process?.env?.REACT_APP_API_URL || window._env_.API_URL,
+    API_URL: process?.env?.REACT_APP_API_URL || window?._env_?.API_URL,
     DISABLE_TENANT_PREFIL_FROM_DOMAIN:
       process?.env?.REACT_APP_DISABLE_TENANT_PREFIL_FROM_DOMAIN ||
-      window._env_.DISABLE_TENANT_PREFIL_FROM_DOMAIN,
+      window?._env_?.DISABLE_TENANT_PREFIL_FROM_DOMAIN,
     STELLAR_EXPERT_URL:
-      process?.env?.REACT_APP_STELLAR_EXPERT_URL || window._env_.STELLAR_EXPERT_URL,
-    HORIZON_URL: process?.env?.REACT_APP_HORIZON_URL || window._env_.HORIZON_URL,
+      process?.env?.REACT_APP_STELLAR_EXPERT_URL || window?._env_?.STELLAR_EXPERT_URL,
+    HORIZON_URL: process?.env?.REACT_APP_HORIZON_URL || window?._env_?.HORIZON_URL,
     RECAPTCHA_SITE_KEY:
-      process?.env?.REACT_APP_RECAPTCHA_SITE_KEY || window._env_.RECAPTCHA_SITE_KEY,
+      process?.env?.REACT_APP_RECAPTCHA_SITE_KEY || window?._env_?.RECAPTCHA_SITE_KEY,
     SINGLE_TENANT_MODE: Boolean(
-      process?.env?.REACT_APP_SINGLE_TENANT_MODE || window._env_.SINGLE_TENANT_MODE,
+      process?.env?.REACT_APP_SINGLE_TENANT_MODE || window?._env_?.SINGLE_TENANT_MODE,
     ),
     USE_SSO: Boolean(process?.env?.REACT_APP_USE_SSO || window?._env_?.USE_SSO),
-    REPORTS_FEATURE_ORGANIZATION_NAMES:
-      (process?.env?.REACT_APP_ENABLE_REPORTS_FEATURE || window?._env_?.ENABLE_REPORTS_FEATURE) ??
-      "",
     OIDC_AUTHORITY: process?.env?.REACT_APP_OIDC_AUTHORITY || window?._env_?.OIDC_AUTHORITY,
     OIDC_CLIENT_ID: process?.env?.REACT_APP_OIDC_CLIENT_ID || window?._env_?.OIDC_CLIENT_ID,
     OIDC_REDIRECT_URI:
@@ -74,28 +70,9 @@ export const {
   RECAPTCHA_SITE_KEY,
   SINGLE_TENANT_MODE,
   USE_SSO,
-  REPORTS_FEATURE_ORGANIZATION_NAMES,
   OIDC_AUTHORITY,
   OIDC_CLIENT_ID,
   OIDC_REDIRECT_URI,
   OIDC_SCOPE,
   OIDC_USERNAME_MAPPING,
 } = await generateEnvConfig();
-
-/**
- * Returns whether the Reports feature is enabled for the given organization name.
- * Uses REACT_APP_ENABLE_REPORTS_FEATURE: "true" = all orgs, "false"/empty = none,
- * else pipe-separated list of names (case-insensitive, trim each segment).
- */
-export function isReportsFeatureEnabledForOrganization(organizationName: string): boolean {
-  const raw = REPORTS_FEATURE_ORGANIZATION_NAMES;
-  if (!raw || raw.trim().toLowerCase() === "false") return false;
-  if (raw.trim().toLowerCase() === "true") return true;
-  const allowed = new Set(
-    raw
-      .split("|")
-      .map((s) => s.trim().toLowerCase())
-      .filter(Boolean),
-  );
-  return allowed.has(organizationName.trim().toLowerCase());
-}

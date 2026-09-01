@@ -1,4 +1,5 @@
 import { Button, Card, Icon, Input, Notification } from "@stellar/design-system";
+import { format } from "date-fns";
 import { useState } from "react";
 
 import { useStatementExport } from "@/apiQueries/useStatementExport";
@@ -37,6 +38,7 @@ export const WalletStatementCard = () => {
   const [activePeriod, setActivePeriod] = useState<StatementPeriodKey | null>(null);
   const { organization } = useRedux("organization");
 
+  const today = format(new Date(), "yyyy-MM-dd");
   const isValidRange = fromDate && toDate && fromDate <= toDate;
 
   const { mutateAsync: downloadStatement, isPending, error } = useStatementExport();
@@ -100,6 +102,7 @@ export const WalletStatementCard = () => {
               label="From date"
               fieldSize="sm"
               type="date"
+              max={today}
               value={fromDate}
               onChange={handleFromDateChange}
             />
@@ -110,6 +113,7 @@ export const WalletStatementCard = () => {
               label="To date"
               fieldSize="sm"
               type="date"
+              max={today}
               value={toDate}
               onChange={handleToDateChange}
             />
@@ -129,7 +133,7 @@ export const WalletStatementCard = () => {
             icon={<Icon.Download01 />}
             iconPosition="left"
             onClick={handleDownload}
-            disabled={!isValidRange || isPending}
+            disabled={!isValidRange}
             isLoading={isPending}
           >
             Download Statement

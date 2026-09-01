@@ -10,10 +10,9 @@ import { InnerPage } from "@/components/InnerPage";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { SessionTokenRefresher } from "@/components/SessionTokenRefresher";
 import { UserSession } from "@/components/UserSession";
-import { isReportsFeatureEnabledForOrganization } from "@/constants/envVariables";
 import { Routes } from "@/constants/settings";
 import GitInfo from "@/generated/gitInfo";
-import { useRedux } from "@/hooks/useRedux";
+import { useAppConfig } from "@/hooks/useAppConfig";
 import { Analytics } from "@/pages/Analytics";
 import { ApiKeys } from "@/pages/ApiKeys";
 import { DisbursementDetails } from "@/pages/DisbursementDetails";
@@ -45,11 +44,10 @@ import { store } from "@/store";
 
 import "@/styles/styles.scss";
 
-/** Renders Reports when the current org is in the allowlist; otherwise 404 (per plan). */
+/** Renders Reports when reporting is enabled for the tenant; otherwise 404. */
 const ReportsPageGate = () => {
-  const { organization } = useRedux("organization");
-  const enabled = isReportsFeatureEnabledForOrganization(organization.data?.name ?? "");
-  if (!enabled) return <NotFound />;
+  const { isReportingEnabled } = useAppConfig();
+  if (!isReportingEnabled) return <NotFound />;
   return (
     <PrivateRoute>
       <InnerPage isNarrow>
