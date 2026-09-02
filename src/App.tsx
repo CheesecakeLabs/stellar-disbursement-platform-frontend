@@ -1,6 +1,7 @@
+import { useEffect } from "react";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useEffect } from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes as RouterRoutes, Route } from "react-router-dom";
 
@@ -10,8 +11,7 @@ import { InnerPage } from "@/components/InnerPage";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { SessionTokenRefresher } from "@/components/SessionTokenRefresher";
 import { UserSession } from "@/components/UserSession";
-import { Routes } from "@/constants/settings";
-import GitInfo from "@/generated/gitInfo";
+
 import { Analytics } from "@/pages/Analytics";
 import { ApiKeys } from "@/pages/ApiKeys";
 import { DisbursementDetails } from "@/pages/DisbursementDetails";
@@ -32,15 +32,35 @@ import { ReceiverDetails } from "@/pages/ReceiverDetails";
 import { ReceiverDetailsEdit } from "@/pages/ReceiverDetailsEdit";
 import { Receivers } from "@/pages/Receivers";
 import { SigninOidc } from "@/pages/Redirect";
+import { Reports } from "@/pages/Reports";
 import { ResetPassword } from "@/pages/ResetPassword";
 import { SetNewPassword } from "@/pages/SetNewPassword";
 import { Settings } from "@/pages/Settings";
 import { SignIn } from "@/pages/SignIn";
 import { Unauthorized } from "@/pages/Unauthorized";
 import { WalletProviders } from "@/pages/WalletProviders";
+
+import { Routes } from "@/constants/settings";
+
+import { useAppConfig } from "@/hooks/useAppConfig";
+
+import GitInfo from "@/generated/gitInfo";
 import { store } from "@/store";
 
 import "@/styles/styles.scss";
+
+/** Renders Reports when reporting is enabled for the tenant; otherwise 404. */
+const ReportsPageGate = () => {
+  const { isReportingEnabled } = useAppConfig();
+  if (!isReportingEnabled) return <NotFound />;
+  return (
+    <PrivateRoute>
+      <InnerPage isNarrow>
+        <Reports />
+      </InnerPage>
+    </PrivateRoute>
+  );
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -310,6 +330,8 @@ export const App = () => {
                 </PrivateRoute>
               }
             />
+            {/* Reports */}
+            <Route path={Routes.REPORTS} element={<ReportsPageGate />} />
             {/* Api Keys */}
             <Route
               path={Routes.API_KEYS}

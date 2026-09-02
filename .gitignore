@@ -11,6 +11,9 @@
 .cursor/
 .kiro/
 
+# local Claude Code guidance
+CLAUDE.local.md
+
 # testing
 /coverage
 
