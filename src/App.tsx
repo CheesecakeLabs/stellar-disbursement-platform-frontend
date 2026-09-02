@@ -1,6 +1,7 @@
+import { useEffect } from "react";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useEffect } from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes as RouterRoutes, Route } from "react-router-dom";
 
@@ -10,9 +11,7 @@ import { InnerPage } from "@/components/InnerPage";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { SessionTokenRefresher } from "@/components/SessionTokenRefresher";
 import { UserSession } from "@/components/UserSession";
-import { Routes } from "@/constants/settings";
-import GitInfo from "@/generated/gitInfo";
-import { useAppConfig } from "@/hooks/useAppConfig";
+
 import { Analytics } from "@/pages/Analytics";
 import { ApiKeys } from "@/pages/ApiKeys";
 import { DisbursementDetails } from "@/pages/DisbursementDetails";
@@ -40,6 +39,12 @@ import { Settings } from "@/pages/Settings";
 import { SignIn } from "@/pages/SignIn";
 import { Unauthorized } from "@/pages/Unauthorized";
 import { WalletProviders } from "@/pages/WalletProviders";
+
+import { Routes } from "@/constants/settings";
+
+import { useAppConfig } from "@/hooks/useAppConfig";
+
+import GitInfo from "@/generated/gitInfo";
 import { store } from "@/store";
 
 import "@/styles/styles.scss";
@@ -297,7 +302,7 @@ export const App = () => {
               path={Routes.DISTRIBUTION_ACCOUNT}
               element={
                 <PrivateRoute>
-                  <InnerPage isNarrow>
+                  <InnerPage>
                     <DistributionAccount />
                   </InnerPage>
                 </PrivateRoute>
