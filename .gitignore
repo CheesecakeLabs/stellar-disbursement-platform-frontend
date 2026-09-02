@@ -12,7 +12,7 @@
 .kiro/
 
 # local Claude Code guidance
-CLAUDE.md
+CLAUDE.local.md
 
 # testing
 /coverage
